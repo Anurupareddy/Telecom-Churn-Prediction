@@ -43,8 +43,13 @@ TotalCharges : The total amount charged to the customer
 Churn : Whether the customer churned or not (Yes or No)
 
 
-> The dataset doesn't have any missing values
-> tenure, MonthlyCharges and TotalCharges features are numerical, all other features are categorical.
-> Categorical variables must be transformed into numerical features using appropriate encoding techniques prior to modeling.
-> TotalCharges represents numeric values, but it is stored as a string and must be cast to float before modeling.
-> TotalCharges = MonthlyCharges × tenure
+# Insights
+ The dataset doesn't have any missing values
+ 
+ tenure, MonthlyCharges and TotalCharges features are numerical, all other features are categorical.
+ 
+ Categorical variables must be transformed into numerical features using appropriate encoding techniques prior to modeling.
+ 
+ TotalCharges represents numeric values, but it is stored as a string and must be cast to float before modeling.
+ 
+ TotalCharges = MonthlyCharges × tenure
