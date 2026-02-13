@@ -1,119 +1,122 @@
-📊 Customer Churn Prediction
-1️⃣ Introduction
-1.1 Problem Statement
+# Customer Churn Prediction
+## Problem Statement
 
-Customer churn is a major challenge in the telecom industry due to high acquisition costs and competitive service offerings. Identifying customers who are likely to churn enables proactive retention strategies and revenue protection.
+In the highly competitive telecom industry, customers can easily switch between service providers, making retention a critical business challenge. Customer expectations are high, often shaped by individual service experiences—and even brief service disruptions can significantly impact satisfaction. Given the high cost of customer acquisition, retaining existing customers is far more cost-effective than acquiring new ones.
 
-1.2 Objective
+Customer churn refers to subscribers who cancel or fail to renew their services. A high churn rate directly impacts revenue and long-term growth. By analyzing historical customer data and identifying churn drivers, telecom companies can proactively design targeted retention strategies, improve service quality, and enhance overall customer experience.
 
-The objective of this project is to build a predictive churn model using customer demographic, service usage, and billing information, and to derive actionable business insights that improve customer retention and lifetime value.
+## Objective
 
-2️⃣ Data Understanding & Preprocessing
-2.1 Dataset Overview
+The goal of this project is to predict customer churn by leveraging both numerical and categorical customer attributes. This is formulated as a binary classification problem on an imbalanced dataset, where the objective is to accurately identify customers who are at high risk of churning, enabling timely and data driven intervention strategies.
 
-Description of the Telco Customer Churn dataset, including data source and size.
+## Data Understanding & Preprocessing
+### Dataset Overview
 
-2.2 Dataset Attributes
+customerID : Customer ID
 
-Explanation of key numerical and categorical features used in the analysis.
+gender : Whether the customer is a male or a female
 
-2.3 Data Preprocessing
+SeniorCitizen : Whether the customer is a senior citizen or not (1, 0)
 
-Handling missing and inconsistent values
+Partner : Whether the customer has a partner or not (Yes, No)
 
-Converting data types
+Dependents : Whether the customer has dependents or not (Yes, No)
 
-Removing non-informative identifiers
+tenure : Number of months the customer has stayed with the company
 
-2.4 Categorical Feature Encoding
+PhoneService : Whether the customer has a phone service or not (Yes, No)
+
+MultipleLines : Whether the customer has multiple lines or not (Yes, No, No phone service)
+
+InternetService : Customer’s internet service provider (DSL, Fiber optic, No)
+
+OnlineSecurity : Whether the customer has online security or not (Yes, No, No internet service)
+
+OnlineBackup : Whether the customer has online backup or not (Yes, No, No internet service)
+
+DeviceProtection : Whether the customer has device protection or not (Yes, No, No internet service)
+
+TechSupport : Whether the customer has tech support or not (Yes, No, No internet service)
+
+StreamingTV : Whether the customer has streaming TV or not (Yes, No, No internet service)
+
+StreamingMovies : Whether the customer has streaming movies or not (Yes, No, No internet service)
+
+Contract : The contract term of the customer (Month-to-month, One year, Two year)
+
+PaperlessBilling : Whether the customer has paperless billing or not (Yes, No)
+
+PaymentMethod : The customer’s payment method (Electronic check, Mailed check, Bank transfer (automatic), Credit card (automatic))
+
+MonthlyCharges : The amount charged to the customer monthly
+
+TotalCharges : The total amount charged to the customer
+
+Churn : Whether the customer churned or not (Yes or No)
+
+### Data Preprocessing
+
+- The dataset doesn't have any missing values
+- tenure, MonthlyCharges and TotalCharges features are numerical, all other features are categorical.
+- Categorical variables must be transformed into numerical features using appropriate encoding techniques prior to modeling.
+- TotalCharges represents numeric values, but it is stored as a string and must be cast to float before modeling.
+- TotalCharges = MonthlyCharges × tenure
+- Filled missing TotalCharges values only where they were null by recomputing them as MonthlyCharges × tenure, which preserves billing logic instead of using arbitrary imputation.
+
+### Categorical Feature Encoding
 
 Label encoding of categorical variables to prepare the dataset for modeling.
+- gender : [0 1] = ['Female' 'Male']
+- Partner : [1 0] = ['Yes' 'No']
+- Dependents : [0 1] = ['No' 'Yes']
+- PhoneService : [0 1] = ['No' 'Yes']
+- MultipleLines : [1 0 2] = ['No phone service' 'No' 'Yes']
+- InternetService : [0 1 2] = ['DSL' 'Fiber optic' 'No']
+- OnlineSecurity : [0 2 1] = ['No' 'Yes' 'No internet service']
+- OnlineBackup : [2 0 1] = ['Yes' 'No' 'No internet service']
+- DeviceProtection : [0 2 1] = ['No' 'Yes' 'No internet service']
+- TechSupport : [0 2 1] = ['No' 'Yes' 'No internet service']
+- StreamingTV : [0 2 1] = ['No' 'Yes' 'No internet service']
+- StreamingMovies : [0 2 1] = ['No' 'Yes' 'No internet service']
+- Contract : [0 1 2] = ['Month-to-month' 'One year' 'Two year']
+- PaperlessBilling : [1 0] = ['Yes' 'No']
+- PaymentMethod : [2 3 0 1] = ['Electronic check' 'Mailed check' 'Bank transfer (automatic)' 'Credit card (automatic)']
+- Churn : [0 1] = ['No' 'Yes']
 
-3️⃣ Exploratory Data Analysis (EDA)
-3.1 Churn Distribution
+## Modeling
+### Logistic Regression
 
-Analysis of churn vs non-churn class distribution and class imbalance.
+Logistic regression is a supervised learning method used mainly for classification (often binary).
 
-3.2 Feature Distribution by Churn Status
-3.2.1 Monthly Charges vs Churn
+It models the probability of a class using the sigmoid (logistic) function, producing outputs between 0 and 1.
 
-Comparison of Monthly Charges between churned and retained customers.
+The model learns weights by maximizing likelihood (or minimizing log loss) and can be regularized (L1/L2) to reduce overfitting.
 
-3.2.2 Tenure vs Churn
+It’s fast, interpretable (feature weights show direction/strength), and works best when the classes are roughly linearly separable in feature space.
 
-Tenure distribution analysis highlighting early-stage churn behavior.
+### Random Forest Classifier
 
-3.3 Churn Percentage Analysis
-3.3.1 Churn Percentage Across Categorical Features
+A Random Forest Classifier is an ensemble model that builds many decision trees and combines their votes to predict the final class.
+Each tree is trained on a bootstrap sample of the data, and at each split it considers a random subset of features, which reduces correlation between trees.
+This usually improves accuracy and robustness while lowering overfitting compared to a single decision tree.
+Key knobs are n_estimators, max_depth, max_features, and min_samples_leaf; you can also inspect feature importance for interpretability.
 
-Churn rate comparison across customer demographics, services, and billing options.
+### XGBoost Classifier
 
-3.4 Tenure and Charges by Customer Segments
-3.4.1 Tenure Distribution Across Categorical Features by Churn Status
+An XGBoost Classifier is a gradient boosting model that builds trees sequentially, where each new tree corrects the errors of the previous ones.
+It minimizes a loss function using gradients, with strong regularization (L1/L2), shrinkage (learning_rate), and row/column subsampling to reduce overfitting.
+It often achieves state-of-the-art performance on tabular data, handling nonlinearity and feature interactions very well.
+Key parameters include n_estimators, max_depth, learning_rate, subsample, colsample_bytree, and reg_lambda, and it supports early stopping with a validation set.
 
-Identification of critical churn windows across different service categories.
+## Model Evaluation & Comparison
+### Evaluation Metrics
 
-3.4.2 Monthly Charges Distribution Across Categorical Features by Churn Status
+In churn prediction, the goal is to identify customers at risk of leaving, not simply to maximize overall accuracy. Due to class imbalance and business impact, the following metrics are more informative.
 
-Analysis of pricing sensitivity and its impact on churn across customer segments.
+Recall (Churn = 1) measures the proportion of actual churned customers correctly identified. High recall is critical because missing a churner results in a lost customer with no opportunity for intervention. In practice, it is often preferable to accept some false positives rather than miss high-risk customers.
 
-4️⃣ Feature Engineering
-4.1 Feature Transformation
+ROC–AUC evaluates the model’s ability to distinguish between churned and retained customers across all classification thresholds. A higher ROC–AUC indicates stronger ranking capability and is useful for comparing models independent of a fixed decision threshold.
 
-Creation and refinement of features to improve model performance.
+Precision–Recall Tradeoff reflects the balance between identifying true churners and limiting false positives. The optimal tradeoff depends on business costs, such as the expense of retention actions versus the cost of customer loss.
 
-4.2 Data Scaling
-
-Scaling numerical features to ensure consistent model behavior.
-
-4.3 Data Balancing
-
-Handling class imbalance using SMOTE to improve minority-class learning.
-
-5️⃣ Modeling
-5.1 Logistic Regression
-
-Baseline model for interpretability and benchmarking.
-
-5.2 Random Forest Classifier
-
-Tree-based ensemble model capturing non-linear relationships.
-
-5.3 XGBoost Classifier
-
-Gradient boosting model optimized for churn prediction performance.
-
-6️⃣ Model Evaluation & Comparison
-6.1 Evaluation Metrics
-
-Recall (Churn = 1)
-
-ROC–AUC
-
-Precision–Recall tradeoff
-
-6.2 Model Comparison
-
-Side-by-side comparison of model performance with business context.
-
-6.3 Business-Oriented Model Recommendation
-
-Selection of the optimal model based on churn detection and revenue impact.
-
-7️⃣ Executive Summary
-
-High-level summary of key findings, model performance, and strategic insights for stakeholders.
-
-8️⃣ Business Impact & Recommendations
-
-Early-tenure retention strategies
-
-Pricing and bundling optimization
-
-Payment method optimization
-
-Targeted churn intervention using predictive modeling
-
-✅ Final Notes
-
-This project demonstrates an end-to-end churn prediction pipeline, combining exploratory analysis, machine learning, and business interpretation to support data-driven decision-making in a real-world telecom scenario.
+Accuracy alone is insufficient in churn problems because class imbalance can produce deceptively high accuracy while failing to detect churners. As a result, accuracy does not reliably reflect churn prediction performance.
