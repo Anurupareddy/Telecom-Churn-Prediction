@@ -1,0 +1,1 @@
+The goal of this project is to predict customer churn by leveraging both numerical and categorical customer attributes. This is formulated as a binary classification problem on an imbalanced dataset, where the objective is to accurately identify customers who are at high risk of churning, enabling timely and data driven intervention strategies.
